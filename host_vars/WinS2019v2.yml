@@ -1,4 +1,4 @@
-ansible_host: x.x.x.x
+ansible_host: 192.168.81.149
 dns_domain_name: "voorbeeld.intern"
 domain_netbios_name: "VOORBEELD"
 check_netbios_name: "VOORBEELD\\Administrator"
