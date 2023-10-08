@@ -4,6 +4,9 @@
   roles:
   - { role: docker, tags: [ 'docker']}
   - { role: ntp, tags: [ 'ntp']}
+  - { role: linux_ssh, tags: ['ssh']}
+  - { role: linux, tags: ['config']}
+  # - { role: linux_firewalls, tags: ['firewalls']}
 
 - hosts: routers 
   gather_facts: true
@@ -25,6 +28,7 @@
   roles:
   - { role: windows, tags: [ 'windows']}
   - { role: windows updates, tags: [ 'updates']}
+  - { role: windows_users, tags: ['users']}
 
 - hosts: Werkstations
   gather_facts: true
