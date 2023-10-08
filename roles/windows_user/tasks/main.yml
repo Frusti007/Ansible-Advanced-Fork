@@ -1,0 +1,57 @@
+- name: Ensure users in ParentOU's are present 
+  microsoft.ad.user:
+    name: "{{item.name}}"
+    firstname: "{{item.firstname}}"
+    sam_account_name: "{{item.sam_account_name}}"
+    surname: "{{item.surname}}"
+    company: "{{item.company}}"
+    password: "{{user_passwords}}"
+    state: present
+    path: OU={{item.ou}}, OU={{rootOU}}, DC={{domain}}, DC={{controller}}
+    groups:
+      set:
+        - CN={{item.group}},OU={{item.ou}}, OU={{rootOU}},DC={{domain}},DC={{controller}}
+        - Domain Users
+    street: Muntinglaan 3
+    city: Groningen
+    state_province: GR
+    postal_code: 9602
+    country: NL
+    attributes:
+      set:
+        telephoneNumber: 555-123456
+  with_items:
+    - {name: "Maid", firstname: "Maid", surname: "Hrustic", company: "Noorderpoort", group: "GG_Administratie", ou: "Administratie", sam_account_name: "mhrustic"}
+    - {name: "Andy", firstname: "Andy", surname: "Su", company: "Noorderpoort", group: "GG_Automatisering", ou: "Automatisering", sam_account_name: "asu"}
+    - {name: "Sebastiaan", firstname: "Sebastiaan", surname: "Knol", company: "Noorderpoort", group: "GG_Directie", ou: "Directie", sam_account_name: "sknol"}
+    - {name: "Brecht", firstname: "Brecht", surname: "Hilgersom", company: "Noorderpoort", group: "GG_Verkoop", ou: "Verkoop", sam_account_name: "bhilgersom"}
+    - {name: "Mark", firstname: "Mark", surname: "Pot", company: "Noorderpoort", group: "GG_Productie", ou: "Productie", sam_account_name: "mpot"}
+
+
+- name: Ensure users in the subOU's are present
+  microsoft.ad.user:
+    name: "{{item.name}}"
+    firstname: "{{item.firstname}}"
+    surname: "{{item.surname}}"
+    company: "{{item.company}}"
+    password: "{{user_passwords}}"
+    sam_account_name: "{{item.sam_account_name}}"
+    state: present
+    path: OU={{item.ou}}, OU={{item.parentOU}}, OU={{rootOU}}, DC={{domain}}, DC={{controller}}
+    groups:
+      set:
+      - CN={{item.group}},OU={{item.ou}}, OU={{item.parentOU}}, OU={{rootOU}},DC={{domain}},DC={{controller}}
+      - Domain Users
+    street: Muntinglaan 3
+    city: Groningen
+    state_province: GR
+    postal_code: 9602
+    country: NL
+    attributes:
+      set:
+        telephoneNumber: 555-123456
+  with_items:
+    - {name: "Joshua", firstname: "Joshua", surname: "de Graaf", company: "Noorderpoort", group: "GG_SysAdmins", ou: "SysAdmins", parentOU: "Automatisering", sam_account_name: "jdegraaf"}
+    - {name: "Michel", firstname: "Michel", surname: "Riemersma", company: "Noorderpoort", group: "GG_Rechterhand", ou: "Rechterhand", parentOU: "Directie", sam_account_name: "mriemersma"}
+    - {name: "Rykle", firstname: "Rykle", surname: "Baron", company: "Noorderpoort", group: "GG_Inkoop", ou: "Inkoop", parentOU: "Verkoop", sam_account_name: "rbaron"}
+    - {name: "Rob", firstname: "Rob", surname: "Verburg", company: "Noorderpoort", group: "GG_Fabricage", ou: "Fabricage", parentOU: "Productie", sam_account_name: "rverburg"}
