@@ -1,13 +1,24 @@
 ---
-create_user: user
-hostname: noorderpoort.intern
-copy_local_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
-sys_packages: [ 'curl', 'vim', 'git', 'ufw', 'firewalld']
+ansible_host: x.x.x.x
+sys_packages:
+  - apt-transport-https
+  - curl
+  - software-properties-common
+  - build-essential
+  - vim
+  - git
 
 # sshGuard
 sshguard_default_whitelist:
   - "127.0.0.0/8"
   - "::1/128"
+
+sshguard_version: 2.4.3
+homefolder: /home/{{ansible_user}}
+__sshguard_config_file: /usr/local/etc/sshguard.conf
+threshold: 20
+ipv4_subnet: 31
+sshguard_manage_config: true
 
 # NTP
 __ntp_daemon: ntp
@@ -20,14 +31,8 @@ ntp_cron_daemon: cron
 ntp_enabled: true
 ntp_timezone: Etc/UTC
 
-# ntp_daemon: [various]
-# ntp_package: ntp
-# ntp_config_file: /etc/ntp.conf
-# ntp_driftfile: [various]
-
 ntp_manage_config: true
 
-# NTP server area configuration (leave empty for 'Worldwide').
 # See: http://support.ntp.org/bin/view/Servers/NTPPoolServers
 ntp_area: 'nl'
 ntp_servers:
@@ -41,5 +46,14 @@ ntp_restrict:
   - "::1"
 
 ntp_cron_handler_enabled: false
-
 ntp_tinker_panic: true
+
+# SSH
+ssh_ansible_managed: true
+
+AllowedUsers:
+  - maid@192.168.112.*
+
+Port: 22
+MaxAuthTries: 5
+__ssh_config_file: /etc/ssh/sshd_config
