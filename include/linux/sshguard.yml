@@ -1,0 +1,85 @@
+- name: "Disable firewalld"
+  service:
+    name: firewalld
+    state: stopped
+    enabled: no
+  ignore_errors: true
+
+- name: "Download sshguard"
+  get_url:
+    url: https://sourceforge.net/projects/sshguard/files/sshguard/{{sshguard_version}}/sshguard-{{sshguard_version}}.tar.gz/download
+    dest: "{{ homefolder }}"
+    mode: "0755"
+
+- name: "Unarchive sshguard"
+  unarchive:
+    src: "{{ homefolder }}/sshguard-{{sshguard_version}}.tar.gz"
+    dest: "{{ homefolder }}"
+    remote_src: true
+
+- name: Configure, Make, and Install the SSHGuard
+  shell:
+    chdir: "{{homefolder}}/sshguard-{{ sshguard_version }}"
+    cmd: ./configure
+
+- name: Build the default target
+  make:
+    chdir: "{{homefolder}}/sshguard-{{sshguard_version}}"
+
+- name: Run 'install' target
+  make:
+    chdir: "{{homefolder}}/sshguard-{{ sshguard_version }}"
+    target: install
+
+- name: "Move the sshguard config file."
+  copy:
+    src: "{{homefolder}}/sshguard-{{sshguard_version}}/examples/sshguard.conf.sample"
+    dest: /usr/local/etc/sshguard.conf
+    remote_src: true
+
+- name: "Move the service"
+  copy:
+    src: "{{homefolder}}/sshguard-{{sshguard_version}}/examples/sshguard.service"
+    dest: /etc/systemd/system/
+    remote_src: true
+
+- name: Set the sshguard_config_file variable.
+  set_fact:
+    sshguard_config_file: "{{ __sshguard_config_file }}"
+  when: sshguard_config_file is not defined
+
+- name: Set the threshold variable.
+  set_fact:
+    threshold: "{{ threshold }}"
+  when: threshold is not defined
+
+- name: Set the ipv4_subnet variable.
+  set_fact:
+    ipv4_subnet: "{{ ipv4_subnet }}"
+  when: ipv4_subnet is not defined
+
+- name: Populate service facts.
+  service_facts:
+
+- name: Generate sshguard configuration file.
+  template:
+    src: "../../templates/sshguard.conf.j2"
+    dest: "{{ sshguard_config_file }}"
+    mode: 0644
+  when: sshguard_manage_config | bool
+
+- name: "Restart sshguard" 
+  service:
+    name: sshguard
+    state: restarted
+    enabled: true
+
+# - name: create sshguard whitelist
+#   template:
+#     dest: /etc/sshguard/whitelist
+#     owner: root
+#     group: root
+#     mode: 'u=rw,go=r'
+#     backup: yes
+#   notify:
+#     - restart sshguard
