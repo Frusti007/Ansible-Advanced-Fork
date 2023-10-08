@@ -1,0 +1,51 @@
+- name: Set the ssh_config_file variable.
+  set_fact:
+    ssh_config_file: "{{ __ssh_config_file }}"
+  when: ssh_config_file is not defined
+
+- name: Set the Port variable.
+  set_fact:
+    Port: "{{ Port }}"
+  when: Port is not defined
+
+- name: Set the MaxAuthTries variable.
+  set_fact:
+    MaxAuthTries: "{{ MaxAuthTries }}"
+  when: MaxAuthTries is not defined
+
+- name: Set the AllowedUsers variable.
+  set_fact:
+    AllowedUsers: "{{ AllowedUsers }}"
+  when: AllowedUsers is not defined
+
+- name: Populate service facts.
+  service_facts:
+
+- name: "Ensure OpenSSH is installed"
+  apt:
+    name: openssh-server
+    state: present
+    update_cache: yes
+
+- name: "Ensure OpenSSH is running"
+  service:
+    name: sshd
+    state: started
+    enabled: yes
+
+- name: Generate ssh configuration file.
+  template:
+    src: "../../templates/sshd.conf.j2"
+    dest: "{{ ssh_config_file }}"
+    mode: 0644
+  notify: restart ssh
+  when: ssh_ansible_managed | bool
+
+- name: "restart sshd"
+  service:
+    name: sshd
+    state: restarted
+
+- name: "include sshguard"
+  ansible.builtin.include_tasks:
+    file: ../../../include/linux/sshguard.yml
