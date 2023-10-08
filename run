@@ -1,12 +1,22 @@
 #!/bin/bash
-#
-# Runned Ansible playbook met parameters
-#
-# ./run -l <host> -t <tag> <extra paramaters>
-# -l zorgt ervoor dat je een specifieke host kan kiezen om de playbook op uit te voeren.
 
-set -eu
+# Define the collection names to search for:
+collection_names=("microsoft.ad" "ansible.windows" "community.windows" "ansible.posix")
+
+# display the collection + filter
+ansible-galaxy collection list | while read -r line
+do
+    for name in "${collection_names[@]}"
+    do
+        if [[ $line == *"$name"* ]]
+        then
+            # Print the matching line
+            echo "$line"
+            break
+        fi
+    done
+done
+
+set -eu 
+# Run ansible-playbook with the given parameters
 time ansible-playbook -i hosts.ini site.yml --ask-vault-pass "$@"
-
-
-# credits naar Rykle Baron
