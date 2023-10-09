@@ -1,0 +1,10 @@
+ansible_host: 192.168.81.157
+dns_domain_name: "noorderpoort.intern"
+domain_netbios_name: "NOORDERPOORT"
+check_netbios_name: "NOORDERPOORT\\Administrator"
+domain_admin_user: "Administrator@noorderpoort.intern"
+userDN: "CN=WERKSTATION, OU=Domain Controllers,DC=noorderpoort,DC=intern"
+targetOU: "OU=Computers,DC=noorderpoort,DC=intern"
+
+DC1: "noorderpoort"
+DC2: "intern"

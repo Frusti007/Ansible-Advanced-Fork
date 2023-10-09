@@ -3,6 +3,11 @@
   become: true
   roles:
   - { role: docker, tags: [ 'docker']}
+  - { role: linux, tags: [ 'linux']}
+  - { role: ntp, tags: [ 'ntp']}
+  - { role: Linux backup, tags: [ 'sync']}
+  - { role: Linux SSH, tags: [ 'ssh']}
+  - { role: Sebastiaan Linux, tags: [ 'sebas']}
 
 - hosts: routers 
   gather_facts: true
@@ -22,4 +27,13 @@
   become_method: runas
   become_user: Administrator
   roles:
-  - { role: windows, tags: [ 'windows']}
+  - { role: windows, tags: [ 'windows']} 
+  - { role: Windows Updates, tags: [ 'update']}
+
+- hosts: Workstations
+  gather_facts: true
+  become: yes
+  become_method: runas
+  become_user: Administrator
+  roles:
+  - { role: workstation, tags: [ 'workstation']}

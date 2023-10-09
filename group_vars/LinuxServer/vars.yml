@@ -1,0 +1,13 @@
+ansible_user: "joshua"
+ansible_password: "{{ linux_password }}"
+ansible_become_password: "{{ linux_password }}"
+
+create_user: user
+hostname: noorderpoort.intern
+copy_local_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+sys_packages: [ 'curl', 'vim', 'git', 'ufw', 'firewalld']
+
+# sshGuard
+sshguard_default_whitelist:
+  - "127.0.0.0/8"
+  - "::1/128"

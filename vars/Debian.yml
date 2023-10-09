@@ -1,0 +1,9 @@
+
+ssh_ansible_managed: true
+
+AllowedUsers:
+  - MONKEY@192.168.236.*
+
+Port: 22202
+MaxAuthTries: 5
+__ssh_config_file: /etc/ssh/sshd_config

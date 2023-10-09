@@ -3,52 +3,35 @@
     file: ../../../group_vars/WindowsServer/vault.yml
   no_log: true
 
+- name: " Include de powershell script om OpenSSH te installeren"
+  ansible.builtin.include_tasks:
+    file: ../../../include/windows/ssh.yml
+
 - name: Installeer de volgende rollen.
   win_feature:
     name: "{{ item }}"
     state: present
+    include_sub_features: true
+    include_management_tools: true
   loop:
     - AD-Domain-Services
     - DHCP
     - DNS
+    - WDS
   when: ansible_distribution_version >= "10.0"
 
-- name: Creeër een nieuwe domein in een nieuw forest op de host.
-  ansible.windows.win_domain:
-    dns_domain_name: "{{ dns_domain_name }}"
-    safe_mode_password: "{{ windows_password }}"
+#- name: " Include de configuraties over Active Domain Name Services. "
+#  ansible.builtin.include_tasks:
+#    file: ../../../include/windows/adds.yml
 
-- name: Configureer de forest met de gegeven configuratie.
-  ansible.windows.win_domain:
-    create_dns_delegation: no
-    database_path: C:\Windows\NTDS
-    dns_domain_name: "{{ dns_domain_name }}"
-    domain_mode: Win2012R2
-    domain_netbios_name: "{{ domain_netbios_name }}"
-    forest_mode: Win2012R2
-    safe_mode_password: "{{ windows_password }}"
-    sysvol_path: C:\Windows\SYSVOL
-  register: domain_install
+#- name: " Include de configuraties om OUs te maken. "
+#  ansible.builtin.include_tasks:
+#    file: ../../../include/windows/ou.yml
 
-- name: Reboot de server
-  ansible.windows.win_reboot:
+#- name: " Include de configuraties om GG en DL aan te maken. "
+#  ansible.builtin.include_tasks:
+#    file: ../../../include/windows/groups.yml
 
-- name: Promoveer de server als een Domain Controller
-  ansible.windows.win_domain_controller:
-    dns_domain_name: "{{ dns_domain_name }}"
-    domain_admin_user: Administrator@"{{ dns_domain_name }}"
-    domain_admin_password: "{{ windows_password }}"
-    safe_mode_password: "{{ windows_password }}"
-    state: domain_controller
-    sysvol_path: D:\SYSVOL
-    database_path: D:\NTDS
-    domain_log_path: D:\NTDS
-  register: dc_promotion
-
-- name: Check of de server een Domain Controller is
-  ansible.windows.win_domain_controller:
-    dns_domain_name: "{{ dns_domain_name }}"
-    domain_admin_user: "{{check_netbios_name}}"
-    domain_admin_password: "{{ windows_password }}"
-    safe_mode_password: "{{ windows_password }}"
-    state: domain_controller
+- name: " Include de configuraties om shares aan te maken. "
+  ansible.builtin.include_tasks:
+    file: ../../../include/windows/shares.yml

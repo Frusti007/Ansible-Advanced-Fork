@@ -1,0 +1,50 @@
+- name: "Maak mappen voor elk afdeling"
+  ansible.windows.win_file:
+    path: C:\{{ item.name }}
+    state: directory
+  with_items:
+    - {name: "Afdelingen"}
+    - {name: Afdelingen\Productie\Fabricage}
+    - {name: Afdelingen\Verkoop\Inkoop}
+    - {name: Afdelingen\Automatisering\SysAdmins}
+    - {name: Afdelingen\Administratie}
+    - {name: Afdelingen\Directie\Rechterhand}
+    - {name: Afdelingen\Werkrapport}
+
+- name: "Maak van de map Werkrapport een share"
+  ansible.windows.win_share:
+    name: "Werkrapport"
+    description: "Dit is een testshare voor Noorderpoort"
+    path: C:\Afdelingen
+    list: true
+    full: Administrators
+    state: present
+
+- name: "Maak van de mappen een share"
+  ansible.windows.win_share:
+    name: "{{item.name}}"
+    description: "Dit is een testshare voor Noorderpoort"
+    path: C:\Afdelingen\{{item.name}}
+    full: NOORDERPOORT\{{item.DL}}
+    list: false
+    state: present
+  with_items:
+    - {name: "Administratie", DL: "DL_Administratie"}
+    - {name: "Automatisering", DL: "DL_Automatisering"}
+    - {name: "Directie", DL: "DL_Directie"}
+    - {name: "Productie", DL: "DL_Productie"}
+    - {name: "Verkoop", DL: "DL_Verkoop"}
+
+#- name: "Maak van de sub mappen een share"
+#  ansible.windows.win_share:
+#    name: "{{item.name}}"
+#    description: "Dit is een testshare voor Noorderpoort"
+#    path: C:\Afdelingen\{{item.name}}
+#    full: NOORDERPOORT\{{item.DL}}
+#    list: false
+#    state: present
+#  with_items:
+#    - {name: "Fabricage", DL: "DL_Fabricage"}
+#    - {name: "Inkoop", DL: "DL_Inkoop"}
+#    - {name: "SysAdmins", DL: "DL_SysAdmins"}
+#    - {name: "Rechterhand", DL: "DL_Rechterhand"}
