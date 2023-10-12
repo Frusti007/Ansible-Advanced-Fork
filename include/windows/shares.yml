@@ -19,7 +19,7 @@
     path: C:\Afdelingen\Werkrapport
     list: true
     full: Administrators
-    read: "NOORDERPOORT\\DL_Administratie,NOORDERPOORT\\DL_SysAdmins,NOORDERPOORT\\DL_Automatisering,NOORDERPOORT\\DL_Verkoop,NOORDERPOORT\\DL_Inkoop,NOORDERPOORT\\DL_Directie,NOORDERPOORT\\DL_Rechterhand,NOORDERPOORT\\DL_Productie,NOORDERPOORT\\DL_Fabricage"
+    change: "NOORDERPOORT\\DL_Administratie,NOORDERPOORT\\DL_SysAdmins,NOORDERPOORT\\DL_Automatisering,NOORDERPOORT\\DL_Verkoop,NOORDERPOORT\\DL_Inkoop,NOORDERPOORT\\DL_Directie,NOORDERPOORT\\DL_Rechterhand,NOORDERPOORT\\DL_Productie,NOORDERPOORT\\DL_Fabricage"
     state: present
 
 - name: "Maak van de ParentFolders mappen een share"
@@ -27,7 +27,8 @@
     name: "{{item.name}}"
     description: "Dit is een testshare voor Noorderpoort"
     path: C:\Afdelingen\{{item.name}}
-    full: "Administrators,NOORDERPOORT\\{{item.DL}}"
+    full: "Administrators"
+    change: "NOORDERPOORT\\{{item.DL}}"
     list: false
     state: present
   with_items:
@@ -51,3 +52,29 @@
     - {name: "SysAdmins", DL: "DL_SysAdmins", parentfolder: "Automatisering", parentDL: "DL_Automatisering"}
     - {name: "Fabricage", DL: "DL_Fabricage", parentfolder: "Productie", parentDL: "DL_Productie"}
     - {name: "Rechterhand", DL: "DL_Rechterhand", parentfolder: "Directie", parentDL: "DL_Directie"}
+
+- name: "Zorg ervoor dat de Parentfolder alleen mag lezen in de subfolder"
+  ansible.windows.win_acl:
+    path: C:\Afdelingen\{{item.parentfolder}}\{{item.subfolder}}
+    user: "NOORDERPOORT\\{{item.DL}}"
+    rights: Read
+    type: allow
+    state: present
+  with_items:
+    - {parentfolder: "Verkoop", subfolder: "Inkoop", DL: "DL_Verkoop"}
+    - {parentfolder: "Automatisering", subfolder: "SysAdmins", DL: "DL_Automatisering"}
+    - {parentfolder: "Productie", subfolder: "Fabricage", DL: "DL_Productie"}
+    - {parentfolder: "Directie", subfolder: "Rechterhand", DL: "DL_Directie"}
+
+- name: "Zorg ervoor dat de ParentFolder niet mag deleten of schrijven in de subfolder"
+  ansible.windows.win_acl:
+    path: C:\Afdelingen\{{item.parentfolder}}\{{item.subfolder}}
+    user: "NOORDERPOORT\\{{item.DL}}"
+    rights: Delete,Write
+    type: deny
+    state: present
+  with_items:
+    - {parentfolder: "Verkoop", subfolder: "Inkoop", DL: "DL_Verkoop"}
+    - {parentfolder: "Automatisering", subfolder: "SysAdmins", DL: "DL_Automatisering"}
+    - {parentfolder: "Productie", subfolder: "Fabricage", DL: "DL_Productie"}
+    - {parentfolder: "Directie", subfolder: "Rechterhand", DL: "DL_Directie"}
