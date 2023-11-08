@@ -1,11 +1,11 @@
 - name: "Include de Ansible-Vault file."
   include_vars:
-    file: ../../../group_vars/WindowsServer/vault.yml
+    file: group_vars/WindowsServer/vault.yml
   no_log: true
 
 - name: " Include de powershell script om OpenSSH te installeren"
   ansible.builtin.include_tasks:
-    file: ../../../include/windows/ssh.yml
+    file: include/windows/ssh.yml
 
 - name: Installeer de volgende rollen.
   win_feature:
@@ -20,18 +20,18 @@
     - WDS
   when: ansible_distribution_version >= "10.0"
 
-#- name: " Include de configuraties over Active Domain Name Services. "
-#  ansible.builtin.include_tasks:
-#    file: ../../../include/windows/adds.yml
-
-#- name: " Include de configuraties om OUs te maken. "
-#  ansible.builtin.include_tasks:
-#    file: ../../../include/windows/ou.yml
-
-#- name: " Include de configuraties om GG en DL aan te maken. "
-#  ansible.builtin.include_tasks:
-#    file: ../../../include/windows/groups.yml
-
-- name: " Include de configuraties om shares aan te maken. "
+- name: " Include de configuraties over Active Domain Name Services. "
   ansible.builtin.include_tasks:
-    file: ../../../include/windows/shares.yml
+   file: include/windows/adds.yml
+
+- name: " Include de configuraties om OUs te maken. "
+  ansible.builtin.include_tasks:
+   file: include/windows/ou.yml
+
+- name: " Include de configuraties om GG en DL aan te maken. "
+  ansible.builtin.include_tasks:
+   file: include/windows/groups.yml
+
+# - name: " Include de configuraties om users aan te maken. "
+#   ansible.builtin.include_tasks:
+#     file: include/windows/users.yml

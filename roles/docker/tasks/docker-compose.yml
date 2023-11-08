@@ -26,16 +26,3 @@ services:
       MYSQL_PASSWORD: "{{ nextcloud_db_password }}"
     volumes:
       - ./nextcloud/db:/var/lib/mysql
-
-  gitlab:
-    image: gitlab/gitlab-ce:latest
-    restart: always
-    ports:
-      - "8443:443"
-      - "8081:80"
-    environment:
-      GITLAB_ROOT_PASSWORD: "{{ gitlab_root_password }}"
-    volumes:
-      - ./gitlab/config:/etc/gitlab
-      - ./gitlab/logs:/var/log/gitlab
-      - ./gitlab/data:/var/opt/gitlab

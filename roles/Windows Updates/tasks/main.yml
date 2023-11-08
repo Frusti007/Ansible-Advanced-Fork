@@ -1,5 +1,5 @@
-#- name: "Installeer alle security, critical & rollup updates"
-#  ansible.windows.win_updates:
+# - name: "Installeer alle security, critical & rollup updates"
+#   ansible.windows.win_updates:
 #    category_names:
 #      - SecurityUpdates
 #      - CriticalUpdates
@@ -13,8 +13,8 @@
     reboot: true
     reboot_timeout: 3600
 
-#- name: "Installeer updates met code"
-#  ansible.windows.win_updates:
+# - name: "Installeer updates met code"
+#   ansible.windows.win_updates:
 #    category_names:
 #    - SecurityUpdates
 #    - CriticalUpdates

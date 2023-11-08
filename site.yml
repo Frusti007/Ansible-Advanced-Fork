@@ -3,15 +3,12 @@
   become: true
   roles:
   - { role: docker, tags: [ 'docker']}
-<<<<<<< HEAD
   - { role: linux, tags: [ 'linux']}
   - { role: ntp, tags: [ 'ntp']}
-  - { role: Linux backup, tags: [ 'sync']}
   - { role: Linux SSH, tags: [ 'ssh']}
   - { role: Sebastiaan Linux, tags: [ 'sebas']}
-=======
-  - { role: ntp, tags: [ 'ntp']}
->>>>>>> 22f0839c956398797d66d65d211ab7d0697c8ef7
+  - { role: linux backup, tags: [ 'backup']}
+  - { role: linux_firewall, tags: [ 'linuxfirewall']}
 
 - hosts: routers 
   gather_facts: true
@@ -31,24 +28,22 @@
   become_method: runas
   become_user: Administrator
   roles:
-<<<<<<< HEAD
   - { role: windows, tags: [ 'windows']} 
   - { role: Windows Updates, tags: [ 'update']}
+  - { role: windows_shares, tags: [ 'shares']}
+  - { role: Windows DHCP, tags: [ 'DHCP']}
+  - { role: Windows DNS, tags: [ 'DNS']}
+  - { role: windows gpo, tags: [ 'gpo']}
+  - { role: Windows Backup, tags: [ 'winbackup']}
+  - { role: windows_users, tags: [ 'winusers']}
+  - { role: Windows Restore, tags: [ 'restore']}
+  - { role: windows_firewall, tags: [ 'winfirewall']}
 
 - hosts: Workstations
-=======
-  - { role: windows, tags: [ 'windows']}
-  - { role: windows updates, tags: [ 'updates']}
-
-- hosts: Werkstations
->>>>>>> 22f0839c956398797d66d65d211ab7d0697c8ef7
   gather_facts: true
   become: yes
   become_method: runas
   become_user: Administrator
   roles:
-<<<<<<< HEAD
   - { role: workstation, tags: [ 'workstation']}
-=======
-  - { role: werkstations, tags: [ 'werkstations']}
->>>>>>> 22f0839c956398797d66d65d211ab7d0697c8ef7
+  - { role: Windows Updates, tags: [ 'wsupdate']}

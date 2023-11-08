@@ -1,0 +1,28 @@
+hostname {{hostname}}
+
+{% for vlan in vlans -%}
+vlan {{ vlan }}
+  name {{ vlans[vlan].name }}
+{% endfor -%}
+
+{% for intf in interfaces -%}
+interface {{ intf }}
+  {% if interfaces[intf].type == 'access' %}
+  switchport mode {{ interfaces[intf].type }}
+  switchport access vlan {{ interfaces[intf].vlan }}
+  {% elif interfaces[intf].type == 'trunk' %}
+  switchport mode {{ interfaces[intf].type }}
+  switchport trunk allowed vlan {{ interfaces[intf].vlan }}
+  switchport trunk native vlan {{ interfaces[intf].native }}
+  { % endif % }
+  no shutdown
+{% endfor -%}
+
+{% for sec in security -%}
+interface range {{ sec }}
+  switchport port-security
+  switchport port-security maximum {{ security[sec].max }}
+  switchport port-security mac-address sticky
+  switchport port-security violation {{ security[sec].violation }}
+  shutdown
+{% endfor -%}

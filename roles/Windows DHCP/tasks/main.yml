@@ -1,0 +1,9 @@
+- name: "Maak een DHCP scope aan met PowerShell"
+  ansible.windows.win_powershell:
+    script: |
+      Add-DhcpServerv4Scope -Name "TestScope" -StartRange 192.168.90.100 -EndRange 192.168.90.150 -SubnetMask 255.255.255.0
+      
+- name: "Edit the scope"
+  ansible.windows.win_powershell:
+    script: |
+      Set-DhcpServerv4OptionValue -ComputerName "WinS2019" -ScopeId 192.168.90.0 -DnsServer 192.168.90.1 -DnsDomain "noorderpoort.intern" -Router 192.168.90.254

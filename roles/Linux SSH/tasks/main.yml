@@ -38,7 +38,7 @@
 
 - name: Generate ssh configuration file.
   template:
-    src: "../../templates/sshd_config.j2"
+    src: "templates/sshd_config.j2"
     dest: "{{ ssh_config_file }}"
     mode: 0644
   notify: restart ssh

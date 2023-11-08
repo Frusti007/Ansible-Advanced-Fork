@@ -1,0 +1,30 @@
+hostname {{hostname}}
+
+{% for vlan in vlans -%}
+vlan {{ vlan }}
+  name {{ vlans[vlan].name }}
+{% endfor -%}
+
+{% for intf in interfaces -%}
+interface {{ intf }}
+  switchport mode {{ interfaces[intf].type }}
+  switchport trunk allowed vlan {{ interfaces[intf].vlan }}
+  switchport trunk native vlan {{ interfaces[intf].native }}
+  no shutdown
+{% endfor -%}
+
+{% for eth in etherchannel -%}
+interface {{ eth }}
+  channel-group {{ etherchannel[eth].channelgroup }} mode {{ etherchannel[eth].mode }} 
+  int port-channel {{ etherchannel[eth].portchannel }}
+  switchport mode {{ etherchannel[eth].type }}
+ {% endfor -%}
+
+{% for sec in security -%}
+interface range {{ sec }}
+  switchport port-security
+  switchport port-security maximum {{ security[sec].max }}
+  switchport port-security mac-address sticky
+  switchport port-security violation {{ security[sec].violation }}
+  shutdown
+{% endfor -%}

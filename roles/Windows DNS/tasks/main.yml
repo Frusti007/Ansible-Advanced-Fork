@@ -1,0 +1,5 @@
+- name: "Maak een reverse lookup zone aan voor DNS"
+  ansible.windows.win_powershell:
+    script: |
+      Add-DnsServerPrimaryZone -NetworkID "192.168.90.0/24" -ReplicationScope "Forest" 
+  changed_when: false

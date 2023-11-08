@@ -1,0 +1,29 @@
+- name: "Firewall regels aanmaken. "
+  community.windows.win_firewall_rule:
+    name: "{{item.name}}"
+    localport: "{{item.port}}"
+    action: allow
+    description: "{{item.description}}"
+    direction: "{{item.direction}}"
+    protocol: "{{item.protocol}}"
+    state: present
+    enabled: yes
+  with_items: 
+    - {name: SMTP, port: 25, protocol: tcp, description: "Mail Transfer protocol", direction: in}
+    - {name: SSH, port: 22, protocol: tcp, description: "Secure Shell", direction: in}
+    - {name: RDP, port: 3389, protocol: tcp, description: "Remote Desktop Protocol", direction: in}
+    - {name: DNS, port: 53, protocol: udp, description: "Domain Name Service", direction: in}
+    - {name: DHCP, port: 67, protocol: udp, description: "Dynamic Host Configuration Protocol", direction: in}
+    - {name: DHCP, port: 68, protocol: udp, description: "Dynamic Host Configuration Protocol", direction: out}
+    - {name: Nextcloud, port: 8080, protocol: tcp, description: Nextcloud, direction: out}
+
+- name: Firewall rule to allow ICMP v4 on all type codes
+  community.windows.win_firewall_rule:
+    name: ICMP Allow incoming V4 echo request
+    enabled: yes
+    state: present
+    profiles: domain
+    action: allow
+    direction: in
+    protocol: icmpv4
+    icmp_type_code: '*'

@@ -1,7 +1,7 @@
 - name: "Include de Ansible-Vault file."
   include_vars:
-    file: ../../../group_vars/Workstations/vault.yml
-#  no_log: true
+    file: group_vars/Workstations/vault.yml
+  no_log: true
 
 - name: Gather information about the domain membership
   win_domain_membership:
@@ -17,18 +17,29 @@
     dns_domain_name: "{{ dns_domain_name }}"
     domain_admin_user: "{{ domain_admin_user }}"
     domain_admin_password: "{{ windows_password }}"
-    domain_ou_path: "OU=Domain Controllers,DC={{ DC1 }},DC={{ DC2 }}"
+    domain_ou_path: "OU=Computers,DC={{ DC1 }},DC={{ DC2 }}"
     state: domain
   register: domain_state
 
-#- name: Reboot de werkstation
-#  ansible.windows.win_reboot:
+- name: Reboot de werkstation
+  ansible.windows.win_reboot:
 
-- name: "Verplaats de computer van Organizational Units."
-  ansible.windows.win_powershell: 
-    script: |
-      Import-Module ActiveDirectory
-      $userDN = "{{ userDN }}"
-      $targetOU = "{{ targetOU }}"
-      Move-ADObject -Identity $userDN -TargetPath $targetOU
-  changed_when: false
+# - name: "Verplaats de computer van Organizational Units."
+#   ansible.windows.win_powershell: 
+#     script: |
+#       Import-Module ActiveDirectory
+#       $userDN = "{{ userDN }}"
+#       $targetOU = "{{ targetOU }}"
+#       Move-ADObject -Identity $userDN -TargetPath $targetOU
+#   changed_when: false
+
+# - name: Firewall rule to alloc ICMP v4 on all type codes
+#   community.windows.win_firewall_rule:
+#     name: ICMP Allow incoming V4 echo request
+#     enabled: yes
+#     state: present
+#     profiles: domain
+#     action: allow
+#     direction: in
+#     protocol: icmpv4
+#     icmp_type_code: '*'

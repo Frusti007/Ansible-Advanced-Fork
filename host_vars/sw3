@@ -1,0 +1,22 @@
+hostname: SW3
+
+vlans:
+  30:
+    name: "vlan30"
+
+interfaces:
+  FastEthernet0/1:
+    vlan: "30"
+    type: "access"
+  FastEthernet0/2:
+    vlan: "30"
+    type: "trunk"
+    native: "999"
+
+security: 
+  FastEthernet0/1:
+    max: "1"
+    violation: "shutdown"
+  FastEthernet0/3-24:
+    max: "1"
+    violation: "shutdown"

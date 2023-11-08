@@ -1,0 +1,69 @@
+- name: Ensure group docker exists
+  group:
+    name: docker
+    state: present
+
+- name: Ensure ansible_user is in docker AND sudo group
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker,sudo
+    append: yes
+  
+- name: Update + upgrade the system
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+    upgrade: dist
+
+- name: Install dependencies
+  apt:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - docker.io
+    - docker-compose
+    - python3-pip
+    - "{{ sys_packages }}"
+
+- name: Ensure docker is enabled + started
+  service:
+    name: docker
+    enabled: yes
+    state: started
+
+- name: Ensure the following directories exist on the server
+  stat:
+    path: "{{ item }}"
+  register: dir_check
+  loop:
+    - ./nextcloud/data
+    - ./nextcloud/db
+
+- name: Create the directories if they don't exist
+  file:
+    path: "{{ item.item }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: docker
+    mode: '0775'
+  loop: "{{ dir_check.results }}"
+  when: not item.stat.exists
+
+- name: Copy docker-compose.yml to the server
+  copy:
+    src: ./docker-compose.yml
+    dest: /home/{{ ansible_user }}/docker-compose.yml
+    owner: "{{ ansible_user }}"
+    group: "docker"
+    mode: 0644
+
+- name: Check if the containers are running
+  shell: docker ps -q -a --filter "status=running"
+  register: running_containers
+  failed_when: false
+
+- name: Start the containers if they aren't running
+  docker_compose:
+    project_src: /home/{{ ansible_user }}/
+    state: present
+  when: running_containers.stdout_lines | length == 0

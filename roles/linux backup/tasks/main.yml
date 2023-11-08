@@ -1,0 +1,54 @@
+- name: Ensure rsync is installed
+  apt:
+    name: rsync
+    state: present
+    update_cache: true
+
+## THIS PART OF THE PLAYBOOK ALLOWS YOU TO CREATE BACKUPS [TARGETSERVER -> ANSIBLECONTROLLER]
+- name: Copy rsync.sh[push] to the remote server
+  copy:
+    src: scripts/rsync.sh
+    dest: /tmp/rsync.sh
+    mode: 0770
+
+- name: File permission
+  file:
+    path: /tmp/rsync.sh
+    owner: "{{ansible_user}}"
+    group: "{{ansible_user}}"
+    mode: +x
+
+- name: Execute rsync.sh script on the remote server
+  shell:
+    chdir: "/tmp/"
+    cmd: "./rsync.sh"
+  register: fetch_result
+
+- name: Display the script output
+  debug:
+    var: fetch_result
+
+
+# # THIS PART OF THE PLAYBOOK ALLOWS YOU TO RESTORE A BACKUP [CONTROLLER -> ANSIBLETARGETSERVER]
+# - name: Copy rsync-pull.sh[pull] to the remote server
+#   copy:
+#     src: scripts/rsync-pull.sh
+#     dest: /tmp/rsync-pull.sh
+#     mode: 0755
+
+# - name: "File permission"
+#   file:
+#     path: /tmp/rsync-pull.sh
+#     owner: "{{ansible_user}}"
+#     group: "{{ansible_user}}"
+#     mode: +x
+
+# - name: Execute rsync.sh script on the remote server
+#   shell:
+#     chdir: /tmp/
+#     cmd: ./rsync-pull.sh
+#   register: fetch_result
+
+# - name: Display the script output
+#   debug:
+#     var: fetch_result

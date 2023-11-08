@@ -1,0 +1,47 @@
+hostname: SW1
+
+vlans:
+  10:
+    name: "vlan10"
+  20:
+    name: "vlan20"
+
+interfaces:
+  FastEthernet0/1:
+    vlan: "10"
+    type: "access"
+    max: "1"
+    violation: "shutdown"
+  FastEthernet0/2:
+    vlan: "20"
+    type: "access"
+    max: "1"
+    violation: "shutdown"
+
+etherchannel:
+  FastEthernet0/21:
+    channelgroup: "1"
+    portchannel: "1"
+    mode: "active"
+    type: "trunk"
+  FastEthernet0/22:
+    channelgroup: "1"
+    portgroup: "1"
+    mode: "active"
+    type: "trunk"
+  FastEthernet0/23:
+    channelgroup: "1"
+    portgroup: "1"
+    mode: "active"
+    type: "trunk"
+  FastEthernet0/24:
+    channelgroup: "1"
+    portgroup: "1"
+    mode: "active"
+    type: "trunk"
+
+security: 
+  FastEthernet0/1-20:
+    max: "1"
+    violation: "shutdown"
+

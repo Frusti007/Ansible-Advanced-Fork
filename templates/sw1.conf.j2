@@ -1,0 +1,48 @@
+hostname {{hostname}}
+
+Banner motd 1
+  Unauthorized access is strictly prohibited. All access and activity
+  is subject to logging and monitoring.1
+
+{% for user in users -%}
+
+{% for vlan in vlans -%}
+vlan {{ vlan }}
+  name {{ vlans[vlan].name }}
+{% endfor -%}
+
+{% for intf in interfaces -%}
+interface {{ intf }}
+  switchport mode {{ interfaces[intf].type }}
+  switchport access vlan {{ interfaces[intf].vlan }}
+  switchport port-security
+  switchport port-security maximum {{ security[sec].max }}
+  switchport port-security mac-address sticky
+  switchport port-security violation {{ security[sec].violation }}
+  no shutdown
+{% endfor -%}
+
+{% for eth in etherchannel -%}
+interface {{ eth }}
+  channel-group {{ etherchannel[eth].channelgroup }} mode {{ etherchannel[eth].mode }} 
+  int port-channel {{ etherchannel[eth].portchannel }}
+  switchport mode {{ etherchannel[eth].type }}
+  ip dhcp snooping trust
+{% endfor -%}
+
+ {% for port in ports -%}
+interface range {{ port }}
+{% endfor -%}
+
+{% for sec in security -%}
+interface range {{ sec }}
+  switchport port-security
+  switchport port-security maximum {{ security[sec].max }}
+  switchport port-security mac-address sticky
+  switchport port-security violation {{ security[sec].violation }}
+  shutdown
+{% endfor -%}
+
+interface {{ DHCP_Trust }}
+  ip dhcp snooping trust
+  no shutdown

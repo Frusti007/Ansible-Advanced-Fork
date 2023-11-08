@@ -1,0 +1,5 @@
+ansible_host: 192.168.81.130
+
+sys_packages: [ 'curl', 'vim', 'git', 'ufw', 'firewalld', 'ncdu']
+
+ansible_user: joshua

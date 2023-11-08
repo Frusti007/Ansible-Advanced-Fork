@@ -1,0 +1,103 @@
+- name: "Set maximum password age to 90 days"
+  community.windows.win_security_policy:
+    section: System Access
+    key: MaximumPasswordAge
+    value : 90
+
+- name: "Set MinimumPasswordLength"
+  community.windows.win_security_policy:
+    section: System Access
+    key: MinimumPasswordLength
+    value: 8
+
+- name: "Set LockoutBadCount"
+  community.windows.win_security_policy:
+    section: System Access
+    key: LockoutBadCount
+    value: 3
+
+- name: "Maak GPO voor elke Group"
+  ansible.windows.win_powershell: 
+    script: |
+      New-GPO -Name "Background GPO - {{item.group}}"
+      New-GPLink -Name "Background GPO - {{item.group}}" -Target "OU={{item.ou}},OU=NPAfdelingen,DC={{domain}},DC={{controller}}"
+  with_items:
+    - {group: "DL_Verkoop", ou: "Verkoop"}
+    - {group: "DL_Administratie", ou: "Administratie"}
+    - {group: "DL_Automatisering", ou: "Automatisering"}
+    - {group: "DL_Productie", ou: "Productie"}
+    - {group: "DL_Directie", ou: "Directie"}
+
+- name: "Maak GPO voor elke subGroup"
+  ansible.windows.win_powershell: 
+    script: |
+      New-GPO -Name "Background GPO - {{item.group}}"
+      New-GPLink -Name "Background GPO - {{item.group}}" -Target "OU={{item.ou}},OU={{item.parentOU}},OU=NPAfdelingen,DC={{domain}},DC={{controller}}"
+  with_items:
+    - {group: "DL_Inkoop", ou: "Inkoop", parentOU: "Verkoop"}
+    - {group: "DL_SysAdmins", ou: "SysAdmins", parentOU: "Automatisering"}
+    - {group: "DL_Fabricage", ou: "Fabricage", parentOU: "Productie"}
+    - {group: "DL_Rechterhand", ou: "Rechterhand", parentOU: "Directie"}
+
+- name: "Verander de wachtwoorden van elke Group"
+  ansible.windows.win_powershell: 
+    script: |
+      Set-GPRegistryValue -Name "Background GPO - {{item.group}}" -Key "HKEY_CURRENT_USER\Control Panel\Desktop" -ValueName "Wallpaper" -Type String -Value "\\WinS2019\Achtergronden\{{item.group}}.jpg"
+  with_items:
+    - {group: "DL_Inkoop"}
+    - {group: "DL_Verkoop"}
+    - {group: "DL_Productie"}
+    - {group: "DL_Fabricage"}
+    - {group: "DL_Automatisering"}
+    - {group: "DL_SysAdmins"}
+    - {group: "DL_Administratie"}
+    - {group: "DL_Directie"}
+    - {group: "DL_Rechterhand"}
+
+- name: Enforce GPOs for Subgroups
+  ansible.windows.win_powershell: 
+    script: |
+      $GPOName = "Background GPO - {{item.group}}"
+      $GPO = Get-GPO -Name $GPOName
+      $GPO.GpoStatus = "AllSettingsEnabled"
+      Set-GPO -Name $GPOName -GpoStatus $GPO.GpoStatus
+  loop:
+    - { group: "DL_Inkoop", ou: "Inkoop", parentOU: "Verkoop" }
+    - { group: "DL_SysAdmins", ou: "SysAdmins", parentOU: "Automatisering" }
+    - { group: "DL_Fabricage", ou: "Fabricage", parentOU: "Productie" }
+    - { group: "DL_Rechterhand", ou: "Rechterhand", parentOU: "Directie" }
+      
+- name: Create GPO to Disable Control Panel in NPAfdelingen
+  ansible.windows.win_powershell: 
+    script: |
+      New-GPO -Name "Control Panel Disable GPO - NPAfdelingen"
+      New-GPLink -Name "Control Panel Disable GPO - NPAfdelingen" -Target "OU=NPAfdelingen,DC={{domain}},DC={{controller}}"
+
+- name: Set Control Panel Restriction in NPAfdelingen
+  ansible.windows.win_powershell: 
+    script: |
+      Set-GPRegistryValue -Name "Control Panel Disable GPO - NPAfdelingen" -Key "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -ValueName "NoControlPanel" -Type DWord -Value 1
+
+# - name: Copy VBS Script to Remote Machines
+#   ansible.builtin.win_copy:
+#     src: scripts/loginmsg.vbs
+#     dest: C:\welcome-message.vbs
+
+# - name: Create GPO
+#   ansible.windows.win_powershell: 
+#     script: |
+#       New-GPO -Name "Logon Script GPO"
+#       Set-GPRegistryValue -Name "Logon Script GPO" -Key "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run" -ValueName "LogonScript" -Type String -Value "C:\welcome-message.vbs"
+
+# - name: Link GPO to OU
+#   ansible.windows.win_powershell: 
+#     script: |
+#       New-GPLink -Name "Logon Script GPO" -Target "OU=NPAfdelingen,DC={{domain}},DC={{controller}}"
+
+# - name: Enforce GPO
+#   ansible.windows.win_powershell: 
+#     script: |
+#       Set-GPO -Name "Logon Script GPO" -GpoStatus AllSettingsEnabled
+
+- name: gpupdate
+  win_command: gpupdate /force

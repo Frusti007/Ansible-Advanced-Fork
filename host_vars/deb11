@@ -1,5 +1,19 @@
 ansible_host: 192.168.81.160
 
+#Sebastiaan host_vars
+users:
+  - username: sebas
+    password: Welkom01!
+  - username: michel
+    password: Welkom01!
+  - username: andy
+    password: Welkom01!
+  - username: maid
+    password: Welkom01!
+  - username: joshua
+    password: Welkom01!
+# Einde Sebastiaan host_vars
+
 __ntp_daemon: ntp
 ntp_tzdata_package: tzdata
 __ntp_package: ntp
@@ -8,7 +22,7 @@ __ntp_driftfile: /var/lib/ntp/drift
 ntp_cron_daemon: cron
 
 ntp_enabled: true
-ntp_timezone: Etc/UTC
+ntp_timezone: Europe/Amsterdam
 
 # ntp_daemon: [various]
 # ntp_package: ntp

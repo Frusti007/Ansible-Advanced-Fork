@@ -1,0 +1,47 @@
+- name: "Zorg ervoor dat firewalld geinstalleerd is"
+  apt:
+    name: firewalld
+    state: present
+    update_cache: yes
+
+- name: Ensure firewalld is running
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: "Configureer firewalld "
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  with_items:
+    - http
+    - https
+  register: firewall_config
+
+- name: Allow port 873 for rsync & 8080 for nextcloud & 22202 for ssh
+  firewalld:
+    port: "{{item}}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  with_items:
+    - 873/tcp
+    - 8080/tcp
+    - 22202/tcp
+
+- name: Register the services of firewalld
+  command: "firewall-cmd --zone=public --list-all"
+  register: firewalld_status
+
+- name: Output the services on the controller
+  debug:
+    msg: "{{ firewalld_status.stdout_lines }}"
+
+- name: Ensure firewalld is reloaded
+  service:
+    name: firewalld
+    state: reloaded
+  when: firewall_config.changed

@@ -2,7 +2,7 @@
 ssh_ansible_managed: true
 
 AllowedUsers:
-  - MONKEY@192.168.236.*
+  - joshua@192.168.81.*
 
 Port: 22202
 MaxAuthTries: 5

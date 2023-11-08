@@ -1,0 +1,7 @@
+- name: " Include yml met basic tasks"
+  ansible.builtin.include_tasks:
+    file: include/sebas/start.yml
+
+- name: " Include yml met adding users"
+  ansible.builtin.include_tasks:
+    file: include/sebas/users.yml
