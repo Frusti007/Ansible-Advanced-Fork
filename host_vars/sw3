@@ -1,22 +1,57 @@
-hostname: SW3
+# hostname: SW3
+
+# vlans:
+#   30:
+#     name: "vlan30"
+#   99:
+#     name: "vlan99"
+
+# interfaces:
+#   FastEthernet0/1:
+#     vlan: "30"
+#     type: "access"
+#   FastEthernet0/2:
+#     vlan: "30,99"
+#     type: "trunk"
+#     native: "999"
+#   FastEthernet0/24:
+#     type: "management"
+#     mode: "access"
+#     vlan: "99"
+#     ip: "192.168.90.13"
+
+# security: 
+#   FastEthernet0/3-23:
+#     max: "1"
+#     violation: "shutdown"
+
+hostname: "SW3"
+management_vlan: "99"
+management_ip: "192.168.90.13 255.255.255.0"
+management_interface: "FastEthernet0/24"
 
 vlans:
   30:
     name: "vlan30"
+  99:
+    name: "vlan99"
 
 interfaces:
   FastEthernet0/1:
-    vlan: "30"
-    type: "access"
+    vlan: "30,99"
+    type: "trunk"
+    dhcp_trust: "yes"
   FastEthernet0/2:
     vlan: "30"
-    type: "trunk"
-    native: "999"
+    type: "access"
+    dhcp_trust: "no"
 
 security: 
-  FastEthernet0/1:
+  FastEthernet0/1-19:
     max: "1"
     violation: "shutdown"
-  FastEthernet0/3-24:
-    max: "1"
-    violation: "shutdown"
+
+etherchannel: "yes"
+etherchannel_range: "FastEthernet0/20-23"
+etherchannel_group: "1"
+etherchannel_mode: "active"

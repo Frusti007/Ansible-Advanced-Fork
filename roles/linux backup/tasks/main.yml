@@ -11,7 +11,7 @@
     dest: /tmp/rsync.sh
     mode: 0770
 
-- name: File permission
+- name: "Zet de file permission goed"
   file:
     path: /tmp/rsync.sh
     owner: "{{ansible_user}}"
@@ -27,8 +27,7 @@
 - name: Display the script output
   debug:
     var: fetch_result
-
-
+    
 # # THIS PART OF THE PLAYBOOK ALLOWS YOU TO RESTORE A BACKUP [CONTROLLER -> ANSIBLETARGETSERVER]
 # - name: Copy rsync-pull.sh[pull] to the remote server
 #   copy:

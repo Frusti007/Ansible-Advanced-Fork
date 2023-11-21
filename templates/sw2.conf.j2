@@ -10,15 +10,17 @@ interface {{ intf }}
   switchport mode {{ interfaces[intf].type }}
   switchport trunk allowed vlan {{ interfaces[intf].vlan }}
   switchport trunk native vlan {{ interfaces[intf].native }}
+  ip dhcp snooping trust
   no shutdown
 {% endfor -%}
 
 {% for eth in etherchannel -%}
 interface {{ eth }}
   channel-group {{ etherchannel[eth].channelgroup }} mode {{ etherchannel[eth].mode }} 
-  int port-channel {{ etherchannel[eth].portchannel }}
-  switchport mode {{ etherchannel[eth].type }}
  {% endfor -%}
+
+int port-channel 1
+switchport mode trunk
 
 {% for sec in security -%}
 interface range {{ sec }}

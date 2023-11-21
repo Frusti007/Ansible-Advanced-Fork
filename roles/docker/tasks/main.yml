@@ -23,7 +23,6 @@
     - docker.io
     - docker-compose
     - python3-pip
-    - "{{ sys_packages }}"
 
 - name: Ensure docker is enabled + started
   service:
@@ -31,7 +30,7 @@
     enabled: yes
     state: started
 
-- name: Ensure the following directories exist on the server
+- name: "Kijk of de volgende directories bestaan"
   stat:
     path: "{{ item }}"
   register: dir_check
@@ -39,7 +38,7 @@
     - ./nextcloud/data
     - ./nextcloud/db
 
-- name: Create the directories if they don't exist
+- name: "Maak de directory's aan als ze niet bestaan"
   file:
     path: "{{ item.item }}"
     state: directory
@@ -49,7 +48,7 @@
   loop: "{{ dir_check.results }}"
   when: not item.stat.exists
 
-- name: Copy docker-compose.yml to the server
+- name: "Kopieer de docker-compose.yml naar de server"
   copy:
     src: ./docker-compose.yml
     dest: /home/{{ ansible_user }}/docker-compose.yml
@@ -57,12 +56,12 @@
     group: "docker"
     mode: 0644
 
-- name: Check if the containers are running
+- name: "Check of de containers al draaien"
   shell: docker ps -q -a --filter "status=running"
   register: running_containers
   failed_when: false
 
-- name: Start the containers if they aren't running
+- name: "Start de containers als ze nog niet draaien"
   docker_compose:
     project_src: /home/{{ ansible_user }}/
     state: present

@@ -5,17 +5,25 @@ vlan {{ vlan }}
   name {{ vlans[vlan].name }}
 {% endfor -%}
 
+interface vlan 99
+ip address 192.168.90.13 255.255.255.0
+
 {% for intf in interfaces -%}
 interface {{ intf }}
   {% if interfaces[intf].type == 'access' %}
   switchport mode {{ interfaces[intf].type }}
   switchport access vlan {{ interfaces[intf].vlan }}
+  no shutdown
   {% elif interfaces[intf].type == 'trunk' %}
   switchport mode {{ interfaces[intf].type }}
   switchport trunk allowed vlan {{ interfaces[intf].vlan }}
   switchport trunk native vlan {{ interfaces[intf].native }}
-  { % endif % }
+  ip dhcp snooping trust
   no shutdown
+  {% elif interfaces[intf].type == 'management' %}
+  switchport mode  {{ interfaces[intf].mode}}
+  switchport access vlan  {{ interfaces[intf].vlan }}
+  {% endif -%}
 {% endfor -%}
 
 {% for sec in security -%}

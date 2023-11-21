@@ -4,11 +4,19 @@ Banner motd 1
   Unauthorized access is strictly prohibited. All access and activity
   is subject to logging and monitoring.1
 
-{% for user in users -%}
-
 {% for vlan in vlans -%}
 vlan {{ vlan }}
   name {{ vlans[vlan].name }}
+{% endfor -%}
+
+{% for mgmt in management -%}
+interface vlan {{ mgmt }}
+  ip address {{ management[mgmt].ip }} {{ management[mgmt].mask }}
+  no shutdown
+  interface {{ management_int }}
+  switchport mode access
+  switchport access vlan {{ mgmt }}
+  no shutdown
 {% endfor -%}
 
 {% for intf in interfaces -%}
@@ -16,19 +24,25 @@ interface {{ intf }}
   switchport mode {{ interfaces[intf].type }}
   switchport access vlan {{ interfaces[intf].vlan }}
   switchport port-security
-  switchport port-security maximum {{ security[sec].max }}
+  switchport port-security maximum {{ interfaces[intf].max }}
   switchport port-security mac-address sticky
-  switchport port-security violation {{ security[sec].violation }}
+  switchport port-security violation {{ interfaces[intf].violation }}
+  {% if interfaces[intf].trust == 'yes' %}
+  ip dhcp snooping trust
   no shutdown
+  {% else %}
+  no shutdown
+  {% endif -%}
 {% endfor -%}
 
 {% for eth in etherchannel -%}
 interface {{ eth }}
   channel-group {{ etherchannel[eth].channelgroup }} mode {{ etherchannel[eth].mode }} 
-  int port-channel {{ etherchannel[eth].portchannel }}
-  switchport mode {{ etherchannel[eth].type }}
-  ip dhcp snooping trust
 {% endfor -%}
+
+int port-channel 1
+switchport mode trunk
+ip dhcp snooping trust
 
  {% for port in ports -%}
 interface range {{ port }}

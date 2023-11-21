@@ -1,40 +1,78 @@
-hostname: SW2
+# hostname: SW2
+
+# vlans:
+#   10:
+#     name: "vlan10"
+#   20:
+#     name: "vlan20"
+#   99:
+#     name: "vlan99"
+
+# management:
+#   99:
+#     ip: "192.168.99.12"
+#     mask: "255.255.255.0"
+
+# management_int: "FastEthernet0/20"  
+
+# interfaces:
+#   FastEthernet0/1:
+#     vlan: "10,20,99"
+#     type: "trunk"
+#     native: "999"
+
+# etherchannel:
+#   FastEthernet0/21:
+#     channelgroup: "1"
+#     portchannel: "1"
+#     mode: "active"
+#     type: "trunk"
+#   FastEthernet0/22:
+#     channelgroup: "1"
+#     portgroup: "1"
+#     mode: "active"
+#     type: "trunk"
+#   FastEthernet0/23:
+#     channelgroup: "1"
+#     portgroup: "1"
+#     mode: "active"
+#     type: "trunk"
+#   FastEthernet0/24:
+#     channelgroup: "1"
+#     portgroup: "1"
+#     mode: "active"
+#     type: "trunk"
+
+# security: 
+#   FastEthernet0/1-19:
+#     max: "1"
+#     violation: "shutdown"
+
+hostname: "SW2"
+management_vlan: "99"
+management_ip: "192.168.90.12 255.255.255.0"
+management_interface: "FastEthernet0/24"
 
 vlans:
   10:
     name: "vlan10"
   20:
     name: "vlan20"
+  99:
+    name: "vlan99"
 
 interfaces:
   FastEthernet0/1:
-    vlan: "10,20"
+    vlan: "10,20,99"
     type: "trunk"
-    native: "999"
-
-etherchannel:
-  FastEthernet0/21:
-    channelgroup: "1"
-    portchannel: "1"
-    mode: "active"
-    type: "trunk"
-  FastEthernet0/22:
-    channelgroup: "1"
-    portgroup: "1"
-    mode: "active"
-    type: "trunk"
-  FastEthernet0/23:
-    channelgroup: "1"
-    portgroup: "1"
-    mode: "active"
-    type: "trunk"
-  FastEthernet0/24:
-    channelgroup: "1"
-    portgroup: "1"
-    mode: "active"
-    type: "trunk"
+    dhcp_trust: "yes"
 
 security: 
-  FastEthernet0/1-20:
+  FastEthernet0/2-19:
     max: "1"
     violation: "shutdown"
+
+etherchannel: "yes"
+etherchannel_range: "FastEthernet0/20-23"
+etherchannel_group: "1"
+etherchannel_mode: "active"
